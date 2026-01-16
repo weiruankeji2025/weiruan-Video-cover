@@ -12,15 +12,37 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', function() {
     // 检查登录状态
     currentUser = UserManager.getCurrentUser();
+
+    // 如果没有当前用户，自动创建游客用户
     if (!currentUser) {
-        // 未登录，跳转到登录页
-        window.location.href = 'index.html';
-        return;
+        currentUser = createGuestUser();
     }
 
     // 初始化页面
     initApp();
 });
+
+/**
+ * 创建游客用户
+ */
+function createGuestUser() {
+    // 检查是否已有游客用户
+    let guestUser = UserManager.findUser('guest@weiruan.com');
+
+    if (!guestUser) {
+        // 创建新的游客用户
+        const result = UserManager.registerUser({
+            username: '游客',
+            email: 'guest@weiruan.com',
+            password: 'guest123'
+        });
+        guestUser = result.user;
+    }
+
+    // 自动登录游客
+    StorageManager.save(STORAGE_KEYS.CURRENT_USER, guestUser);
+    return guestUser;
+}
 
 /**
  * 初始化应用
@@ -375,24 +397,23 @@ function loadHistory(type) {
 }
 
 /**
- * 退出登录
+ * 清除所有数据
  */
 function handleLogout() {
-    // 计算使用时长
-    const startTime = sessionStorage.getItem('startTime');
-    if (startTime) {
-        const duration = Date.now() - parseInt(startTime);
-        const minutes = Math.round(duration / 60000);
-        if (minutes > 0) {
-            StatsManager.addUsageTime(currentUser.id, minutes);
-        }
+    if (!confirm('确定要清除所有数据吗？此操作不可恢复！')) {
+        return;
     }
 
-    // 清除登录状态
-    UserManager.logout();
+    // 清除所有数据
+    StorageManager.clear();
 
-    // 跳转到登录页
-    window.location.href = 'index.html';
+    // 显示提示
+    showToast('数据已清除，页面即将刷新', 'success');
+
+    // 1秒后刷新页面
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
 }
 
 /**

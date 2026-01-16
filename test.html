@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>威软视频封面提取器 - 功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #667eea;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <h1>威软视频封面提取器 - 功能测试</h1>
+
+    <div class="test-section">
+        <h2>1. 存储管理器测试</h2>
+        <button onclick="testStorage()">运行测试</button>
+        <div id="storageResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. 用户管理测试</h2>
+        <button onclick="testUserManager()">运行测试</button>
+        <div id="userResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. 验证码生成测试</h2>
+        <button onclick="testCaptcha()">运行测试</button>
+        <canvas id="testCaptcha" width="120" height="50" style="border: 1px solid #ccc; margin: 10px 0;"></canvas>
+        <div id="captchaResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. 签到系统测试</h2>
+        <button onclick="testCheckin()">运行测试</button>
+        <div id="checkinResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. 清除所有测试数据</h2>
+        <button onclick="clearAllData()" style="background: #f5576c;">清除数据</button>
+        <div id="clearResult"></div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script>
+        // 存储管理器测试
+        function testStorage() {
+            const result = document.getElementById('storageResult');
+            result.innerHTML = '';
+
+            try {
+                // 测试保存和读取
+                const testKey = 'test_data';
+                const testData = { name: '测试', value: 123 };
+
+                StorageManager.save(testKey, testData);
+                const loaded = StorageManager.load(testKey);
+
+                if (JSON.stringify(loaded) === JSON.stringify(testData)) {
+                    result.innerHTML = '<div class="test-result success">✓ 存储管理器测试通过</div>';
+                } else {
+                    result.innerHTML = '<div class="test-result error">✗ 数据读取不一致</div>';
+                }
+
+                StorageManager.remove(testKey);
+            } catch (error) {
+                result.innerHTML = `<div class="test-result error">✗ 测试失败: ${error.message}</div>`;
+            }
+        }
+
+        // 用户管理测试
+        function testUserManager() {
+            const result = document.getElementById('userResult');
+            result.innerHTML = '';
+
+            try {
+                // 注册测试用户
+                const testUser = {
+                    username: '测试用户',
+                    email: 'test@example.com',
+                    password: 'test123'
+                };
+
+                const registerResult = UserManager.registerUser(testUser);
+
+                if (registerResult.success) {
+                    result.innerHTML += '<div class="test-result success">✓ 用户注册成功</div>';
+
+                    // 测试登录
+                    const loginResult = UserManager.loginUser(testUser.email, testUser.password);
+                    if (loginResult.success) {
+                        result.innerHTML += '<div class="test-result success">✓ 用户登录成功</div>';
+                    } else {
+                        result.innerHTML += '<div class="test-result error">✗ 用户登录失败</div>';
+                    }
+
+                    // 测试重复注册
+                    const duplicateResult = UserManager.registerUser(testUser);
+                    if (!duplicateResult.success) {
+                        result.innerHTML += '<div class="test-result success">✓ 重复注册检测正常</div>';
+                    } else {
+                        result.innerHTML += '<div class="test-result error">✗ 重复注册检测失败</div>';
+                    }
+                } else {
+                    result.innerHTML = '<div class="test-result error">✗ 用户注册失败</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="test-result error">✗ 测试失败: ${error.message}</div>`;
+            }
+        }
+
+        // 验证码测试
+        function testCaptcha() {
+            const result = document.getElementById('captchaResult');
+            const canvas = document.getElementById('testCaptcha');
+
+            try {
+                // 生成验证码
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                let code = '';
+                for (let i = 0; i < 4; i++) {
+                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // 背景
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, 'rgba(102, 126, 234, 0.1)');
+                gradient.addColorStop(1, 'rgba(118, 75, 162, 0.1)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 绘制验证码
+                ctx.textBaseline = 'middle';
+                ctx.font = 'bold 24px Arial';
+
+                for (let i = 0; i < code.length; i++) {
+                    const char = code[i];
+                    const x = 20 + i * 25;
+                    const y = canvas.height / 2;
+                    const rotation = (Math.random() - 0.5) * 0.4;
+
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(rotation);
+
+                    const hue = Math.random() * 60 + 220;
+                    ctx.fillStyle = `hsl(${hue}, 70%, 60%)`;
+                    ctx.fillText(char, 0, 0);
+
+                    ctx.restore();
+                }
+
+                result.innerHTML = `<div class="test-result success">✓ 验证码生成成功: ${code}</div>`;
+            } catch (error) {
+                result.innerHTML = `<div class="test-result error">✗ 测试失败: ${error.message}</div>`;
+            }
+        }
+
+        // 签到系统测试
+        function testCheckin() {
+            const result = document.getElementById('checkinResult');
+            result.innerHTML = '';
+
+            try {
+                const currentUser = UserManager.getCurrentUser();
+                if (!currentUser) {
+                    result.innerHTML = '<div class="test-result error">✗ 请先运行用户管理测试</div>';
+                    return;
+                }
+
+                // 测试签到
+                const checkinResult = CheckinManager.checkin(currentUser.id);
+
+                if (checkinResult.success || checkinResult.message === '今天已签到过了') {
+                    result.innerHTML += '<div class="test-result success">✓ 签到功能正常</div>';
+
+                    // 获取签到数据
+                    const checkinData = CheckinManager.getUserCheckinData(currentUser.id);
+                    result.innerHTML += `<div class="test-result success">✓ 连续签到天数: ${checkinData.consecutiveDays}</div>`;
+                } else {
+                    result.innerHTML = '<div class="test-result error">✗ 签到失败</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="test-result error">✗ 测试失败: ${error.message}</div>`;
+            }
+        }
+
+        // 清除所有数据
+        function clearAllData() {
+            const result = document.getElementById('clearResult');
+
+            if (confirm('确定要清除所有测试数据吗？')) {
+                try {
+                    StorageManager.clear();
+                    result.innerHTML = '<div class="test-result success">✓ 所有数据已清除</div>';
+                } catch (error) {
+                    result.innerHTML = `<div class="test-result error">✗ 清除失败: ${error.message}</div>`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

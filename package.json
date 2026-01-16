@@ -1,0 +1,16 @@
+{
+  "name": "weiruan-video-cover",
+  "version": "1.0.0",
+  "description": "威软视频封面提取器 - 自动提取视频封面的智能应用",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8080 -o",
+    "dev": "npx http-server -p 8080"
+  },
+  "keywords": ["video", "cover", "extractor", "威软"],
+  "author": "威软科技",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

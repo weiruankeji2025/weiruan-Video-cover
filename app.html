@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>威软视频封面提取器</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="app-page">
+    <!-- 导航栏 -->
+    <nav class="navbar fade-in">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>威软视频封面提取器</h1>
+            </div>
+            <div class="nav-menu">
+                <a href="#" class="nav-link active" onclick="switchTab('upload')">封面提取</a>
+                <a href="#" class="nav-link" onclick="switchTab('dashboard')">个人面板</a>
+                <div class="user-info">
+                    <span id="username">用户</span>
+                    <button class="btn-logout" onclick="handleLogout()">退出</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 上传区域 -->
+        <div id="uploadSection" class="section active">
+            <div class="container">
+                <!-- 签到卡片 -->
+                <div class="checkin-card slide-up">
+                    <div class="checkin-info">
+                        <div class="checkin-status">
+                            <span class="checkin-label">连续签到</span>
+                            <span class="checkin-days" id="consecutiveDays">0</span>
+                            <span class="checkin-unit">天</span>
+                        </div>
+                        <button class="btn-checkin" id="checkinBtn" onclick="handleCheckin()">
+                            <span>今日签到</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 状态选择 -->
+                <div class="quality-selector slide-up" style="animation-delay: 0.1s;">
+                    <h3>输出质量</h3>
+                    <div class="quality-options">
+                        <label class="quality-option">
+                            <input type="radio" name="quality" value="high" checked>
+                            <span class="option-card">
+                                <span class="option-icon">⭐</span>
+                                <span class="option-name">高品质</span>
+                                <span class="option-desc">1920x1080</span>
+                            </span>
+                        </label>
+                        <label class="quality-option">
+                            <input type="radio" name="quality" value="medium">
+                            <span class="option-card">
+                                <span class="option-icon">✨</span>
+                                <span class="option-name">清晰</span>
+                                <span class="option-desc">1280x720</span>
+                            </span>
+                        </label>
+                        <label class="quality-option">
+                            <input type="radio" name="quality" value="low">
+                            <span class="option-card">
+                                <span class="option-icon">💫</span>
+                                <span class="option-name">一般</span>
+                                <span class="option-desc">854x480</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 上传区域 -->
+                <div class="upload-zone slide-up" style="animation-delay: 0.2s;" id="uploadZone">
+                    <input type="file" id="videoInput" accept="video/*" style="display: none;" onchange="handleVideoUpload(event)">
+                    <div class="upload-content" onclick="document.getElementById('videoInput').click()">
+                        <div class="upload-icon">🎬</div>
+                        <h2>拖拽视频文件到这里</h2>
+                        <p>或点击选择文件</p>
+                        <span class="upload-hint">支持 MP4、AVI、MOV 等格式</span>
+                    </div>
+                </div>
+
+                <!-- 进度条 -->
+                <div id="progressBar" class="progress-bar" style="display: none;">
+                    <div class="progress-fill"></div>
+                    <span class="progress-text">处理中...</span>
+                </div>
+
+                <!-- 封面预览 -->
+                <div id="coverPreview" class="cover-preview" style="display: none;">
+                    <h3>智能提取的封面（选择一张下载）</h3>
+                    <div class="cover-grid" id="coverGrid"></div>
+                    <div class="preview-actions">
+                        <button class="btn-secondary" onclick="resetUpload()">重新上传</button>
+                        <button class="btn-primary" onclick="downloadSelected()">
+                            <span>下载选中封面</span>
+                            <div class="btn-glow"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 个人面板 -->
+        <div id="dashboardSection" class="section">
+            <div class="container">
+                <div class="dashboard-header slide-up">
+                    <h2>个人数据面板</h2>
+                    <p>查看您的使用统计</p>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="stats-grid">
+                    <div class="stat-card slide-up" style="animation-delay: 0.1s;">
+                        <div class="stat-icon">📤</div>
+                        <div class="stat-info">
+                            <span class="stat-label">上传次数</span>
+                            <span class="stat-value" id="uploadCount">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card slide-up" style="animation-delay: 0.2s;">
+                        <div class="stat-icon">📥</div>
+                        <div class="stat-info">
+                            <span class="stat-label">下载次数</span>
+                            <span class="stat-value" id="downloadCount">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card slide-up" style="animation-delay: 0.3s;">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <span class="stat-label">连续签到</span>
+                            <span class="stat-value" id="dashboardDays">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card slide-up" style="animation-delay: 0.4s;">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-info">
+                            <span class="stat-label">总使用时长</span>
+                            <span class="stat-value" id="totalTime">0</span>
+                            <span class="stat-unit">分钟</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 趋势图 -->
+                <div class="chart-container slide-up" style="animation-delay: 0.5s;">
+                    <h3>使用趋势</h3>
+                    <canvas id="trendChart" width="800" height="300"></canvas>
+                </div>
+
+                <!-- 历史记录 -->
+                <div class="history-section slide-up" style="animation-delay: 0.6s;">
+                    <div class="history-tabs">
+                        <button class="history-tab active" onclick="switchHistory('upload')">上传历史</button>
+                        <button class="history-tab" onclick="switchHistory('download')">下载历史</button>
+                    </div>
+                    <div class="history-content" id="historyContent"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast 提示 -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/video.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

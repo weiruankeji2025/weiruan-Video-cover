@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>威软视频封面提取器 - 登录</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+    <!-- 背景粒子效果 -->
+    <div class="particles"></div>
+
+    <div class="auth-container fade-in">
+        <!-- Logo 区域 -->
+        <div class="logo-section">
+            <h1 class="app-title">威软视频封面提取器</h1>
+            <p class="app-subtitle">AI 智能提取 · 一键生成精美封面</p>
+        </div>
+
+        <!-- 认证卡片 -->
+        <div class="auth-card">
+            <!-- 登录表单 -->
+            <div id="loginForm" class="form-container">
+                <h2 class="form-title">欢迎回来</h2>
+
+                <div class="input-group">
+                    <input type="text" id="loginAccount" class="input-field" placeholder="邮箱 / 手机号" required>
+                    <span class="input-icon">📧</span>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="loginPassword" class="input-field" placeholder="密码" required>
+                    <span class="input-icon">🔒</span>
+                </div>
+
+                <div class="captcha-group">
+                    <input type="text" id="loginCaptcha" class="input-field captcha-input" placeholder="验证码" required>
+                    <canvas id="loginCaptchaCanvas" class="captcha-canvas"></canvas>
+                    <button type="button" class="refresh-captcha" onclick="refreshCaptcha('login')">🔄</button>
+                </div>
+
+                <button class="btn-primary" onclick="handleLogin()">
+                    <span>登录</span>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <div class="form-footer">
+                    <span>还没有账号？</span>
+                    <a href="#" onclick="switchForm('register')">立即注册</a>
+                </div>
+            </div>
+
+            <!-- 注册表单 -->
+            <div id="registerForm" class="form-container" style="display: none;">
+                <h2 class="form-title">创建账号</h2>
+
+                <div class="tab-group">
+                    <button class="tab-btn active" onclick="switchRegisterType('email')">邮箱注册</button>
+                    <button class="tab-btn" onclick="switchRegisterType('phone')">手机注册</button>
+                </div>
+
+                <div id="emailRegister" class="register-type">
+                    <div class="input-group">
+                        <input type="email" id="registerEmail" class="input-field" placeholder="邮箱地址" required>
+                        <span class="input-icon">📧</span>
+                    </div>
+                </div>
+
+                <div id="phoneRegister" class="register-type" style="display: none;">
+                    <div class="input-group">
+                        <input type="tel" id="registerPhone" class="input-field" placeholder="手机号码" required>
+                        <span class="input-icon">📱</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="registerUsername" class="input-field" placeholder="用户名" required>
+                    <span class="input-icon">👤</span>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="registerPassword" class="input-field" placeholder="密码（6-20位）" required>
+                    <span class="input-icon">🔒</span>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="registerConfirmPassword" class="input-field" placeholder="确认密码" required>
+                    <span class="input-icon">🔒</span>
+                </div>
+
+                <div class="captcha-group">
+                    <input type="text" id="registerCaptcha" class="input-field captcha-input" placeholder="验证码" required>
+                    <canvas id="registerCaptchaCanvas" class="captcha-canvas"></canvas>
+                    <button type="button" class="refresh-captcha" onclick="refreshCaptcha('register')">🔄</button>
+                </div>
+
+                <button class="btn-primary" onclick="handleRegister()">
+                    <span>注册</span>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <div class="form-footer">
+                    <span>已有账号？</span>
+                    <a href="#" onclick="switchForm('login')">立即登录</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 版权信息 -->
+        <div class="copyright">
+            <p>© 2026 威软科技 · 让视频封面更精彩</p>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

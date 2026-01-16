@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件大小限制测试 - 威软视频封面提取器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #667eea;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        .file-input {
+            margin: 15px 0;
+            padding: 10px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            text-align: center;
+            background: #f8f9ff;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .file-label:hover {
+            background: #764ba2;
+        }
+        .file-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .limit-info {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>文件大小限制测试</h1>
+
+    <div class="limit-info">
+        <strong>📏 当前限制：</strong> 4GB (4,294,967,296 字节)<br>
+        <strong>💡 提示：</strong> 此测试页面用于验证文件大小限制功能是否正常工作
+    </div>
+
+    <div class="test-section">
+        <h2>自动化测试</h2>
+        <p>测试文件大小验证逻辑（不需要真实文件）</p>
+        <button onclick="runAutomatedTests()">运行自动化测试</button>
+        <div id="autoTestResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>手动文件测试</h2>
+        <p>上传真实视频文件进行测试</p>
+
+        <div class="file-input">
+            <label for="fileInput" class="file-label">
+                📁 选择视频文件
+            </label>
+            <input type="file" id="fileInput" accept="video/*" onchange="testFileSize(event)">
+            <div class="file-info" id="fileInfo">未选择文件</div>
+        </div>
+
+        <div id="manualTestResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试用例说明</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8f9fa;">
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">文件大小</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">预期结果</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">0 字节</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">❌ 被拒绝（无效文件）</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">10 MB</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">✅ 通过</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">100 MB</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">✅ 通过</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">1 GB</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">✅ 通过</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">2 GB</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">✅ 通过</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">3 GB</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">✅ 通过</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">4 GB</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">✅ 通过（刚好等于限制）</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">4.1 GB</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">❌ 被拒绝（超过限制）</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">5 GB</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">❌ 被拒绝（超过限制）</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // 文件大小常量（与 video.js 保持一致）
+        const MAX_FILE_SIZE = 4 * 1024 * 1024 * 1024; // 4GB
+
+        /**
+         * 格式化文件大小
+         */
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        /**
+         * 验证文件大小
+         */
+        function validateFileSize(fileSize) {
+            if (fileSize <= 0) {
+                return {
+                    valid: false,
+                    reason: '文件大小无效（0字节）'
+                };
+            }
+
+            if (fileSize > MAX_FILE_SIZE) {
+                return {
+                    valid: false,
+                    reason: `文件大小超过限制（${formatFileSize(fileSize)} > ${formatFileSize(MAX_FILE_SIZE)}）`
+                };
+            }
+
+            return {
+                valid: true,
+                reason: `文件大小符合要求（${formatFileSize(fileSize)} ≤ ${formatFileSize(MAX_FILE_SIZE)}）`
+            };
+        }
+
+        /**
+         * 运行自动化测试
+         */
+        function runAutomatedTests() {
+            const result = document.getElementById('autoTestResult');
+            result.innerHTML = '<h3>测试进行中...</h3>';
+
+            const testCases = [
+                { size: 0, shouldPass: false, name: '0 字节' },
+                { size: 10 * 1024 * 1024, shouldPass: true, name: '10 MB' },
+                { size: 100 * 1024 * 1024, shouldPass: true, name: '100 MB' },
+                { size: 500 * 1024 * 1024, shouldPass: true, name: '500 MB' },
+                { size: 1024 * 1024 * 1024, shouldPass: true, name: '1 GB' },
+                { size: 2 * 1024 * 1024 * 1024, shouldPass: true, name: '2 GB' },
+                { size: 3 * 1024 * 1024 * 1024, shouldPass: true, name: '3 GB' },
+                { size: 4 * 1024 * 1024 * 1024, shouldPass: true, name: '4 GB (边界值)' },
+                { size: 4 * 1024 * 1024 * 1024 + 1, shouldPass: false, name: '4 GB + 1字节' },
+                { size: 5 * 1024 * 1024 * 1024, shouldPass: false, name: '5 GB' },
+                { size: 10 * 1024 * 1024 * 1024, shouldPass: false, name: '10 GB' }
+            ];
+
+            let passCount = 0;
+            let failCount = 0;
+            let html = '<h3>测试结果</h3>';
+
+            testCases.forEach((testCase, index) => {
+                const validation = validateFileSize(testCase.size);
+                const passed = validation.valid === testCase.shouldPass;
+
+                if (passed) {
+                    passCount++;
+                } else {
+                    failCount++;
+                }
+
+                const statusClass = passed ? 'success' : 'error';
+                const statusIcon = passed ? '✅' : '❌';
+                const expectedResult = testCase.shouldPass ? '应该通过' : '应该拒绝';
+                const actualResult = validation.valid ? '已通过' : '已拒绝';
+
+                html += `
+                    <div class="test-result ${statusClass}">
+                        <strong>${statusIcon} 测试 ${index + 1}: ${testCase.name}</strong><br>
+                        预期: ${expectedResult} | 实际: ${actualResult}<br>
+                        详情: ${validation.reason}
+                    </div>
+                `;
+            });
+
+            const summaryClass = failCount === 0 ? 'success' : 'error';
+            html = `
+                <div class="test-result ${summaryClass}">
+                    <strong>📊 测试摘要</strong><br>
+                    总计: ${testCases.length} 个测试<br>
+                    通过: ${passCount} 个 ✅<br>
+                    失败: ${failCount} 个 ❌<br>
+                    成功率: ${Math.round(passCount / testCases.length * 100)}%
+                </div>
+            ` + html;
+
+            result.innerHTML = html;
+        }
+
+        /**
+         * 测试真实文件大小
+         */
+        function testFileSize(event) {
+            const file = event.target.files[0];
+            const fileInfo = document.getElementById('fileInfo');
+            const result = document.getElementById('manualTestResult');
+
+            if (!file) {
+                fileInfo.innerHTML = '未选择文件';
+                result.innerHTML = '';
+                return;
+            }
+
+            // 显示文件信息
+            fileInfo.innerHTML = `
+                <strong>文件名:</strong> ${file.name}<br>
+                <strong>文件类型:</strong> ${file.type || '未知'}<br>
+                <strong>文件大小:</strong> ${formatFileSize(file.size)} (${file.size.toLocaleString()} 字节)
+            `;
+
+            // 验证文件类型
+            if (!file.type.startsWith('video/')) {
+                result.innerHTML = `
+                    <div class="test-result error">
+                        <strong>❌ 文件类型错误</strong><br>
+                        请上传视频文件（当前文件类型: ${file.type || '未知'}）
+                    </div>
+                `;
+                return;
+            }
+
+            // 验证文件大小
+            const validation = validateFileSize(file.size);
+            const statusClass = validation.valid ? 'success' : 'error';
+            const statusIcon = validation.valid ? '✅' : '❌';
+
+            let html = `
+                <div class="test-result ${statusClass}">
+                    <strong>${statusIcon} 验证结果</strong><br>
+                    ${validation.reason}
+                </div>
+            `;
+
+            // 显示详细信息
+            html += `
+                <div class="test-result info">
+                    <strong>📋 详细分析</strong><br>
+                    文件大小: ${formatFileSize(file.size)}<br>
+                    限制大小: ${formatFileSize(MAX_FILE_SIZE)}<br>
+                    剩余空间: ${validation.valid ? formatFileSize(MAX_FILE_SIZE - file.size) : '已超出'}<br>
+                    占用比例: ${Math.round(file.size / MAX_FILE_SIZE * 100)}%
+                </div>
+            `;
+
+            result.innerHTML = html;
+        }
+
+        // 页面加载时显示限制信息
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('文件大小限制测试页面已加载');
+            console.log('当前最大文件大小限制:', formatFileSize(MAX_FILE_SIZE));
+            console.log('限制值（字节）:', MAX_FILE_SIZE);
+        });
+    </script>
+</body>
+</html>

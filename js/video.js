@@ -30,10 +30,10 @@ async function handleVideoUpload(event) {
         return;
     }
 
-    // 验证文件大小（限制2GB）
-    const maxSize = 2 * 1024 * 1024 * 1024;
+    // 验证文件大小（限制4GB）
+    const maxSize = 4 * 1024 * 1024 * 1024;
     if (file.size > maxSize) {
-        showToast('视频文件不能超过 2GB', 'error');
+        showToast('视频文件不能超过 4GB', 'error');
         return;
     }
 
